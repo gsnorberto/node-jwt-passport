@@ -3,7 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import apiRoutes from './routes/api';
-// import passport from 'passport';
+import passport from 'passport';
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ server.use(express.urlencoded({ extended: true }));
 
 server.get('/ping', (req: Request, res: Response) => res.json({ pong: true }));
 
-// server.use(passport.initialize());
+server.use(passport.initialize());
 
 server.use(apiRoutes);
 
@@ -25,19 +25,19 @@ server.use((req: Request, res: Response) => {
    res.json({ error: 'Endpoint não encontrado.' });
 });
 
-// const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-//    if (err.status) {
-//       res.status(err.status)
-//    } else {
-//       res.status(400); // Bad Request
-//    }  
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+   if (err.status) {
+      res.status(err.status)
+   } else {
+      res.status(400); // Bad Request
+   }  
    
-//    if(err.message){
-//       res.json({ error: err.message })
-//    } else {
-//       res.json({ error: 'Ocorreu algum erro.' });
-//    }
-// }
-// server.use(errorHandler);
+   if(err.message){
+      res.json({ error: err.message })
+   } else {
+      res.json({ error: 'Ocorreu algum erro.' });
+   }
+}
+server.use(errorHandler);
 
 server.listen(process.env.PORT);
